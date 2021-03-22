@@ -1,65 +1,54 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import BestSellers from "../components/BestSellers";
+import Footer from "../components/Footer";
+import Header from "../components/Header";
+import HeadSlider from "../components/HeadSlider";
+import Offers from "../components/Offers";
+
+export const OfferContext = React.createContext();
+export const BestSellerContext = React.createContext();
 
 export default function Home() {
-  return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
-  )
+    const [offerData, setOfferData] = useState([]);
+    const [bestSellersData, setbestSellersData] = useState([]);
+    useEffect(() => {
+        axios
+            .get("https://www.bamadar.com/data/api/get_promotions")
+            .then((res) => {
+                setOfferData(res.data.data);
+            })
+            .catch((e) => console.log(e));
+    }, []);
+    useEffect(() => {
+        axios
+            .get("https://www.bamadar.com/data/api/top_user_sells")
+            .then((res) => {
+                setbestSellersData(res.data.data);
+            })
+            .catch((e) => console.log(e));
+    }, []);
+    return (
+        <>
+            <Main>
+                <head>
+                    <title>MyShop</title>
+                </head>
+                <Header />
+                <HeadSlider />
+            </Main>
+            <OfferContext.Provider value={offerData}>
+                <Offers />
+            </OfferContext.Provider>
+            <BestSellerContext.Provider value={bestSellersData}>
+                <BestSellers />
+            </BestSellerContext.Provider>
+            <Footer />
+        </>
+    );
 }
+
+const Main = styled.div`
+    margin: 0 15px;
+`;
